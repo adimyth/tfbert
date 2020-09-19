@@ -3,13 +3,15 @@ from typing import List, Union
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
+from attrdict import AttrDict  # type: ignore
 from pandas import DataFrame
 from tensorflow.keras.utils import to_categorical  # type: ignore
 
-from attrdict import AttrDict  # type: ignore
-
+from .logger import singleton_logger
 from .metrics import matthews_correlation
 from .smart_batching_dataset import BertDataset
+
+logger = singleton_logger()
 
 
 class ColaData:
@@ -26,15 +28,17 @@ class ColaData:
     def get_cola_df(self):
         in_domain_train = pd.read_csv(
             self.path / "in_domain_train.tsv", sep="\t", names=self.cols
-        )
+        )[:50]
         in_domain_val = pd.read_csv(
             self.path / "in_domain_dev.tsv", sep="\t", names=self.cols
-        )
+        )[:50]
         out_domain_val = pd.read_csv(
             self.path / "out_of_domain_dev.tsv", sep="\t", names=self.cols
-        )
-        val = in_domain_val.append(out_domain_val)
-        test = pd.read_csv(self.path / "../../../cola_out_of_domain_test.tsv", sep="\t")
+        )[:50]
+        val = in_domain_val.append(out_domain_val)[:50]
+        test = pd.read_csv(
+            self.path / "../../../cola_out_of_domain_test.tsv", sep="\t"
+        )[:50]
         return [in_domain_train, val, test]
 
     def __init__(self, path: Union[str, Path]):
@@ -47,7 +51,7 @@ class ColaData:
         self.y_train_enc = to_categorical(self.y_train)
         self.y_val_enc = to_categorical(self.y_val)
 
-        print(f"\nColaData instantiated from path: {self.path}\n")
+        logger.info(f"\nColaData instantiated from path: {self.path}\n")
         self.describe_df(self.traindf, "Train Data")
         self.describe_df(self.valdf, "Val Data")
 
@@ -87,5 +91,5 @@ class ColaData:
         )
         preds = self.model.predict(test_dataset)
         self.testdf["Label"] = np.argmax(preds, axis=1)
-        print(f"\n\nTest Data: \n{self.testdf['Label'].value_counts()}")
+        logger.info(f"\n\nTest Data: \n{self.testdf['Label'].value_counts()}")
         self.testdf[["Id", "Label"]].to_csv("sample_submission.csv", index=False)
