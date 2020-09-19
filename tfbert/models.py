@@ -1,6 +1,7 @@
 import tensorflow as tf  # type: ignore
+from tensorflow.keras.layers import Dense, Dropout  # type: ignore
 from tensorflow.keras.models import Model  # type: ignore
-from tensorflow.keras.layers import Dropout, Dense  # type: ignore
+
 from transformers import TFAutoModel  # type: ignore
 
 

@@ -1,6 +1,6 @@
-from sklearn.metrics import roc_auc_score  # type: ignore
-import tensorflow.keras.backend as K  # type: ignore
 import tensorflow as tf
+import tensorflow.keras.backend as K  # type: ignore
+from sklearn.metrics import roc_auc_score  # type: ignore
 
 
 # https://stackoverflow.com/questions/39895742/matthews-correlation-coefficient-with-keras
