@@ -23,7 +23,7 @@ repos:
         entry: flake8
         args: [
             "--config=setup.cfg",
-            "--ignore=E501,PD011,F403,F405,W503,E231,VNE001"
+            "--ignore=E501,PD011,F403,F405,W503,E231,VNE001,E203"
         ]
         additional_dependencies: [
             flake8,

@@ -25,6 +25,12 @@ class ColaData:
     def get_cola_xy(df: DataFrame) -> List[DataFrame]:
         return [df["sentence"], df["label"]]
 
+    def sort_df_by_length(self, data: DataFrame) -> DataFrame:
+        data["length"] = data["sentence"].str.len()
+        data = data.sort_values(by="length", ascending=True).reset_index(drop=True)
+        data = data.drop(columns=["length"])
+        return data
+
     def get_cola_df(self):
         in_domain_train = pd.read_csv(
             self.path / "in_domain_train.tsv", sep="\t", names=self.cols
@@ -45,6 +51,10 @@ class ColaData:
         self.path = Path(path)
         self.cols = ["source", "label", "notes", "sentence"]
         self.traindf, self.valdf, self.testdf = self.get_cola_df()
+
+        self.traindf = self.sort_df_by_length(self.traindf)
+        self.valdf = self.sort_df_by_length(self.valdf)
+
         self.x_train, self.y_train = self.get_cola_xy(self.traindf)
         self.x_val, self.y_val = self.get_cola_xy(self.valdf)
 

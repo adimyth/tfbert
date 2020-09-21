@@ -44,11 +44,12 @@ class BertDataset:
         while len(samples) > 0:
             upd_batch_size = min(self.batch_size, len(samples))
             # pick a random index in the list of remaining samples to start our batch at.
-            select = random.randint(0, len(samples) - upd_batch_size)
-            batch = samples[select:(select+upd_batch_size)]
+            systemRandom = random.SystemRandom()
+            select = systemRandom.randint(0, len(samples) - upd_batch_size)
+            batch = samples[select : (select + upd_batch_size)]
             batch_ordered_sentences.append([s[0] for s in batch])
             batch_ordered_labels.append([s[1] for s in batch])
-            del samples[select:select + upd_batch_size]
+            del samples[select : select + upd_batch_size]
             pbar.update(1)
         pbar.close()
         return batch_ordered_sentences, batch_ordered_labels
@@ -65,7 +66,7 @@ class BertDataset:
             batch_padded_inputs = []
             batch_attn_masks = []
             # find the longest sample in the batch.
-            max_size = max([len(sen) for sen in batch_inputs])
+            max_size = max(len(sen) for sen in batch_inputs)
             for sen in batch_inputs:
                 # num of tokens to pad
                 num_pads = max_size - len(sen)
@@ -96,7 +97,7 @@ class BertDataset:
 
         self.logger.info("Batch Sizes")
         for idx, x in enumerate(inputs):
-            print(f"{idx}: {x.shape}")
+            print(f"Batch{idx}: {x.shape}")
 
         dataset = tf.data.Dataset.from_tensor_slices((inputs, labels))
         dataset = dataset.cache()

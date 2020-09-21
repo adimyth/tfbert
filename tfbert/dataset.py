@@ -1,6 +1,7 @@
 import tensorflow as tf  # type: ignore
-
 from transformers import AutoTokenizer  # type: ignore
+
+from .logger import singleton_logger
 
 
 class BertDataset:
@@ -8,10 +9,11 @@ class BertDataset:
         self.max_len = max_len
         self.model_name = model_name
         self.batch_size = batch_size
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.logger = singleton_logger()
 
     def encode_data(self, sentences):
-        tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-        encoded = tokenizer.batch_encode_plus(
+        encoded = self.tokenizer.batch_encode_plus(
             sentences,
             add_special_tokens=True,
             max_length=self.max_len,
@@ -24,6 +26,7 @@ class BertDataset:
 
     def create(self, sentences, labels):
         input_ids = self.encode_data(sentences)
+        self.logger.info(f"Input IDs: {len(input_ids)}")
         dataset = tf.data.Dataset.from_tensor_slices((input_ids, labels))
         dataset = dataset.cache()
         dataset = dataset.batch(self.batch_size)
