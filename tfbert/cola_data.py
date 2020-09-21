@@ -34,17 +34,17 @@ class ColaData:
     def get_cola_df(self):
         in_domain_train = pd.read_csv(
             self.path / "in_domain_train.tsv", sep="\t", names=self.cols
-        )[:50]
+        )
         in_domain_val = pd.read_csv(
             self.path / "in_domain_dev.tsv", sep="\t", names=self.cols
-        )[:50]
+        )
         out_domain_val = pd.read_csv(
             self.path / "out_of_domain_dev.tsv", sep="\t", names=self.cols
-        )[:50]
-        val = in_domain_val.append(out_domain_val)[:50]
+        )
+        val = in_domain_val.append(out_domain_val)
         test = pd.read_csv(
             self.path / "../../../cola_out_of_domain_test.tsv", sep="\t"
-        )[:50]
+        )
         return [in_domain_train, val, test]
 
     def __init__(self, path: Union[str, Path]):
